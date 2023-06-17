@@ -26,7 +26,7 @@
 
 ### **Is Block Occupied [4]** - This is a BOOL type stored as an INT at index **4** stating if the sensor has detected anything, this can only be reset when the block infront's sensor is **NOT Activated**
 
-### **Block ID Behind [5]** - This is and INT type at index **5** stating what id the block behind is so that it can be cleared when this block's sensor stops being active
+### **Block ID Behind [5]** - This is an INT type at index **5** stating what id the block behind is so that it can be cleared when this block's sensor stops being active
 
 ## Signal
 >The Signal array contains a nested array of information about each signal and what block it belongs to and what it's instructions are
