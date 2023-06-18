@@ -1,11 +1,15 @@
-# Block Signalling V4
+## This software is **NOT** intended to be fully scalable without majour code changes
+
+# **Block Signalling V4**
+
 > This Replicates Simple (Non route indicating) UK Block Signalling On A Signal By Signal Basis
 
 ### The program checks each signal's instructions and then checks this from the blocks instead of the blocks changing the signals. Blocks can still change eachother but mainly for the purpose of checking if a block can be considered clear or not
 
+## **Signal Types**
 
-## Signal Types
 > These are the number representation of signal types that a signal can be
+
 0. Home Semaphore
 1. Distant Semaphore
 2. 2 Aspect Colour Light (Danger & Pass)
@@ -14,15 +18,23 @@
 5. 3 Aspect Colour Light
 6. 4 Aspect Colour Light
 
-## Signal States
+## **Signal States**
+
 > These are the number representations of signal states that a signal can be
+
 0. Danger
 1. Warning
 2. Advanced Warning
 3. Pass
 
+## **LinesList**
 
-## Block
+>These are the loops and branches of track that the block is situated on, Contains a simple array of line indexes
+**e.g. [1,2,3,4] for 4 separate lines**
+
+
+## **Block**
+
 >The Block array contains a nested array of information about the block
 
 0. Block ID
@@ -31,6 +43,7 @@
 3. Is Sensor Activated
 4. Is Block Occupied
 5. Block ID Behind
+6. The Line That The Block Is On
 
 
 ### **Block ID [0]** - This is an **INT** type at index **0** stating what ID number the block is, This must always match it's array index position
@@ -45,7 +58,10 @@
 
 ### **Block ID Behind [5]** - This is an **INT** type at index **5** stating what id the block behind is so that it can be cleared when this block's sensor stops being active
 
-## Signal
+### **The Line That The Block Is On [6]** - This is an **INT** type at index **6** stating the index in the LinesList of which line this block is on, This is used so that it can be cleared and so that it can be ignored with the ignore button
+
+## **Signal**
+
 >The Signal array contains a nested array of information about each signal and what block it belongs to and what it's instructions are
 
 0. Signal ID
@@ -83,7 +99,8 @@
 ### **Signal Instructions Stop Index [10]** - This is an **INT** type at index **10** stating what is the last index in the SignalInstructions array that will be done on this signal
 
 
-## SignalInstructions
+## **SignalInstructions**
+
 > This nested array will contain each instruction (case) that will be checked repetadely in the loop
 
 0. Instruction ID
@@ -96,8 +113,10 @@
 7. Instruction2Data2
 8. InstructionBooleanOperator
 
-## SignalInstructionsList
+## **SignalInstructionsList**
+
 ### InstructionType
+
 0. No Instruction
 1. Check And Change Signal (1 Check Instruction)
 2. Check And Change Signal (2 Check Instructions)
@@ -112,6 +131,7 @@
 ### **Change Signals To Pass [3]** this takes the number from **Instruction1Data1** and then sets the number of blocks behind to clear
 
 ## Boolean Operators List
+
 0. No Operator
 1. AND
 2. OR
