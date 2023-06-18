@@ -1,8 +1,25 @@
 # Block Signalling V4
-> This Replicates Simple UK Block Signalling On A Signal By Signal Basis
+> This Replicates Simple (Non route indicating) UK Block Signalling On A Signal By Signal Basis
 
-### The program checks each signal's instructions and then checks this from the blocks instead of the blocks changing the signals. Blocks can still change eachother
+### The program checks each signal's instructions and then checks this from the blocks instead of the blocks changing the signals. Blocks can still change eachother but mainly for the purpose of checking if a block can be considered clear or not
 
+
+## Signal Types
+> These are the number representation of signal types that a signal can be
+0. Home Semaphore
+1. Distant Semaphore
+2. 2 Aspect Colour Light (Danger & Pass)
+3. 2 Aspect Colour Light (Danger & Warning)
+4. 2 Aspect Colour Light (Warning & Pass)
+5. 3 Aspect Colour Light
+6. 4 Aspect Colour Light
+
+## Signal States
+> These are the number representations of signal states that a signal can be
+0. Danger
+1. Warning
+2. Advanced Warning
+3. Pass
 
 
 ## Block
@@ -64,3 +81,38 @@
 ### **Signal Instructions Start Index [9]** - This is an **INT** type at index **9** stating what index in the SignalInstructions array to start at 
 
 ### **Signal Instructions Stop Index [10]** - This is an **INT** type at index **10** stating what is the last index in the SignalInstructions array that will be done on this signal
+
+
+## SignalInstructions
+> This nested array will contain each instruction (case) that will be checked repetadely in the loop
+
+0. Instruction ID
+1. Signal ID
+2. StateToSet
+3. InstructionIndexInList
+4. Instruction1Data1
+5. Instruction1Data2
+6. Instruction2Data1
+7. Instruction2Data2
+8. InstructionBooleanOperator
+
+## SignalInstructionsList
+### InstructionType
+0. No Instruction
+1. Check And Change Signal (1 Check Instruction)
+2. Check And Change Signal (2 Check Instructions)
+3. Change Signals To Pass
+
+### **No Instruction [0]** - this **INT** type will state that the instruction will do nothing
+
+### **Check And Change Signal [1]** - this **INT** type states that the instruction will take the **Instruction1Data1** and find the **Block ID** with this data and then check it's occupied status against the value in **Instruction1Data2** and if they are equal then it will change the signal state to the **StateToSet** value
+
+### **Check And Change Signal (2 Check Instructions) [2]** - this **INT** type states that the instruction will take the **Instruction1Data1** and find the **Block ID** with this data and then check it's occupied status against the value in **Instruction1Data2** and save this result. Then it will do the same for the values in **Instruction2Data1** and **Instruction2Data2** and than take these results and then use the **InstructionBooleanOperator** to compare them, if the result returns true then the signal will be changed to the **StateToSet** value
+
+### **Change Signals To Pass [3]** this takes the number from **Instruction1Data1** and then sets the number of blocks behind to clear
+
+## Boolean Operators List
+0. No Operator
+1. AND
+2. OR
+3. XOR
