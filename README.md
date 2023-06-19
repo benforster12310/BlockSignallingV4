@@ -1,4 +1,4 @@
-## This software is **NOT** intended to be fully scalable without majour code changes
+## This software is **NOT** intended to be fully scalable without major code changes
 
 # **Block Signalling V4**
 
