@@ -136,3 +136,8 @@
 1. AND
 2. OR
 3. XOR
+
+## Control Pushbuttons
+
+> Control Buttons are provided to clear a block if pressed and if pressed and held it can allow wrong way running which sets all the signals to red and blocks the sensors so that trains can run in the opposite direction
+> Control buttons can also be set to clear the blocks
