@@ -111,7 +111,9 @@
 5. Instruction1Data2
 6. Instruction2Data1
 7. Instruction2Data2
-8. InstructionBooleanOperator
+8. Instruction3Data1
+9. Instruction3Data2
+10. InstructionBooleanOperator
 
 ## **SignalInstructionsList**
 
@@ -120,7 +122,8 @@
 0. No Instruction
 1. Check And Change Signal (1 Check Instruction)
 2. Check And Change Signal (2 Check Instructions)
-3. Change Signals To Pass
+3. Check And Change Signal (3 Check Instructions)
+4. Change Signals To Pass
 
 ### **No Instruction [0]** - this **INT** type will state that the instruction will do nothing
 
@@ -128,7 +131,9 @@
 
 ### **Check And Change Signal (2 Check Instructions) [2]** - this **INT** type states that the instruction will take the **Instruction1Data1** and find the **Block ID** with this data and then check it's occupied status against the value in **Instruction1Data2** and save this result. Then it will do the same for the values in **Instruction2Data1** and **Instruction2Data2** and than take these results and then use the **InstructionBooleanOperator** to compare them, if the result returns true then the signal will be changed to the **StateToSet** value
 
-### **Change Signals To Pass [3]** this takes the number from **Instruction1Data1** and then sets the number of blocks behind to clear
+### **Check And Change Signal (3 Check Instructions) [3]** - this **INT** type is exactly the same as the above but with another instruction totalling 3. The boolean operator applies to the result of all these instructions
+
+### **Change Signals To Pass [4]** this takes the number from **Instruction1Data1** and then sets the number of blocks behind to clear
 
 ## Boolean Operators List
 
@@ -141,3 +146,8 @@
 
 > Control Buttons are provided to clear a block if pressed and if pressed and held it can allow wrong way running which sets all the signals to red and blocks the sensors so that trains can run in the opposite direction
 > Control buttons can also be set to clear the blocks
+
+SetPinMode() 
+0 = INPUT_PULLUP
+1 = INPUT
+2 = OUTPUT
