@@ -1,0 +1,41 @@
+<html>
+    <body>
+        <select id="selectElement">
+            <option value="0">Home Semaphore</option>
+            <option value="1">Distant Semaphore</option>
+            <option value="2">2 Aspect Colour Light Danger & Pass</option>
+            <option value="3">2 Aspect Colour Light Danger & Warning</option>
+            <option value="4">2 Aspect Colour Light Warning & Pass</option>
+            <option value="5">3 Aspect Colour Light</option>
+            <option value="6">4 Aspect Colour Light</option>
+        </select>
+        <input type="number" id="signalID" placeholder="Signal ID">
+        <input type="number" id="signalChangePin" placeholder="Signal Change Pin (semaphore)">
+        <input type="number" id="signalDangerPin" placeholder="Signal Danger Pin">
+        <input type="number" id="signalWarningPin" placeholder="Signal Warning Pin">
+        <input type="number" id="signalAdvanceWarningPin" placeholder="Signal Advance Warning Pin">
+        <input type="number" id="signalPassPin" placeholder="Signal Pass Pin">
+        <input type="number" id="infront1" placeholder="Block ID First Infront">
+        <input type="number" id="infront2" placeholder="Block ID Second Infront">
+        <input type="number" id="infront3" placeholder="Block ID Third Infront">
+        <input type="number" id="infront4" placeholder="Block ID Fourth Infront">
+        <input type="number" id="instructionStartIndex" placeholder="Instruction Start At">
+        
+        <button onclick="createInstruction()">Create Instruction</button>
+    </body>
+    <script>
+        function createInstruction() {
+            var type = document.getElementById("selectElement").value;
+            var signalID = document.getElementById("signalID").value;
+            var infront1 = document.getElementById("infront1").value;
+            var infront2 = document.getElementById("infront2").value;
+            var infront3 = document.getElementById("infront3").value;
+            var infront4 = document.getElementById("infront4").value;
+            var instructionStartIndex = document.getElementById("instructionStartIndex").value;
+            if(type == 0) {
+                // then only 2 instructions are needed
+                var instruction1 = "{}"
+            }
+        }
+    </script>
+</html>

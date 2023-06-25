@@ -1,5 +1,7 @@
 ## This software is **NOT** intended to be fully scalable without major code changes
 
+## This Software Is **NOT** to be used in **SAFETY-CRITICAL** situations. It is for non-passenger carrying model railways ONLY
+
 # **Block Signalling V4**
 
 > This Replicates Simple (Non route indicating) UK Block Signalling On A Signal By Signal Basis

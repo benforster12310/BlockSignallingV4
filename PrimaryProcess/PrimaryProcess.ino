@@ -4,11 +4,15 @@
 
 #include "ArduinoJson.h";
 
-// Sensor Debounce Time
+// Sensor Debounce Time - how long a sensor must be clear until the block behind it is cleared
 unsigned long SensorDebounceTime = 4000;
 
+// RelayHoldTime - this is passed to the delay() function so it is blocking.
+// used to turn the relay on and off. Should be kept as low as possible (milliseconds)
+const int RelayHoldTime = 100;
+
 // Lines List - Track - See Documentation
-int LinesList[6] = {1,2,3,4,5,6};
+const int LinesList[6] = {1,2,3,4,5,6};
 
 // Blocks Array
 int Blocks[3][7] = {
@@ -19,20 +23,18 @@ int Blocks[3][7] = {
 };
 
 // SensorLastTriggeredTime
-unsigned long SensorLastTriggeredTime[3] = {
-    0, 0, 0
-}
+unsigned long SensorLastTriggeredTime[3] = {0, 0, 0};
 
 // Signals Array
 int Signals[3][11] = {
   // 0  1  2  3  4   5   6  7   8  9  10
     {0, 0, 5, 0, 0, 14, 15, 0, 16, 0, 2},
-    {1, 1, 5, 0, 0, 17, 18, 0, 19, 3, 5},
-    {2, 2, 5, 0, 0, 20, 21, 0, 22, 6, 8}
+    {1, 1, 5, 0, 0, 17, 20, 0, 21, 3, 5},
+    {2, 2, 5, 0, 0, 22, 23, 0, 24, 6, 8}
 };
 
 // Signal Instructions Array
-int SignalInstructions[9][11] = {
+const int SignalInstructions[9][11] = {
   // 0  1  2  3  4  5  6  7  8  9  10
     {0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0}, //signal 0 danger if block infront occupied
     {1, 0, 1, 2, 1, 0, 2, 1, 0, 0, 1}, //signal 0 warning if block infront clear and block infront of that occupied
@@ -58,20 +60,20 @@ void setPinMode(int pin, int mode) {
         document["data2"] = mode;
         
         // then send this to Serial1
-        seialiseJson(document, Serial1);
+        serializeJson(document, Serial1);
     }
     else {
         // then check what mode it is
-        // mode == 1 = INPUT_PULLUP
-        if(mode == 1) {
+        // mode == 0 = INPUT_PULLUP
+        if(mode == 0) {
             pinMode(pin, INPUT_PULLUP);
         }
-        // mode == 2 = INPUT
-        else if(mode == 2) {
+        // mode == 1 = INPUT
+        else if(mode == 1) {
             pinMode(pin, INPUT);
         }
-        // mode == 3 = OUTPUT
-        else if(mode == 3) {
+        // mode == 2 = OUTPUT
+        else if(mode == 2) {
             pinMode(pin, OUTPUT);
         }
     }
@@ -91,15 +93,21 @@ void setPin(int pin, bool high) {
         document["data2"] = high;
 
         // then send this to Serial1
-        serialiseJson(document, Serial1);
+        serializeJson(document, Serial1);
     }
     else {
         // then write the pin high or low
         if(high == true) {
             digitalWrite(pin, HIGH);
+            Serial.print("PIN: ");
+            Serial.print(pin);
+            Serial.println(" SET HIGH");
         }
         else if(high == false) {
             digitalWrite(pin, LOW);
+            Serial.print("PIN: ");
+            Serial.print(pin);
+            Serial.println(" SET LOW");
         }
     }
 }
@@ -109,6 +117,74 @@ void setPin(int pin, bool high) {
 void changeSignal(int signal, int state) {
     // then check what type the signal is
     int signalType = Signals[signal][2];
+    int signalState = Signals[signal][3];
+    // then check if the signal is a home semaphore [0] or a distant semaphore [1]
+    if(signalType == 0 || signalType == 1) {
+        // then check the state of the signal to make sure it isnt the same as the requested state
+        if(signalState != state) {
+            // then change the signal
+            setPin(Signals[signal][4], true);
+            // then delay for the RelayHoldTime
+            delay(RelayHoldTime);
+            setPin(Signals[signal][4], false);
+        }
+    }
+    // then check if the signal is a colour light signal
+    else if(signalType == 2 || signalType == 3 || signalType == 4 || signalType == 5 || signalType == 6) {
+        // then check that the state is different so we are not wasting time
+        if(signalState != state) {
+            // then turn the signal to the requested state
+            // danger [0]
+            if(state == 0) {
+                // then turn the danger pin on
+                setPin(Signals[signal][5], true);
+            }
+            // warning [1]
+            else if(state == 1) {
+                // then turn the warning pin on
+                setPin(Signals[signal][6], true);
+            }
+            // advance warning [2]
+            else if(state == 2) {
+                // then turn the warning pin on
+                setPin(Signals[signal][6], true);
+                // then turn the advance warning pin on
+                setPin(Signals[signal][7], true);
+            }
+            // pass [3]
+            else if(state == 3) {
+                // then turn the pass pin on
+                setPin(Signals[signal][8], true);
+            }
+
+            // then check what state the signal is currently set to and turn that aspect off
+            // is currently danger [0]
+            if(signalState == 0) {
+                // then turn the danger aspect off
+                setPin(Signals[signal][5], false);
+            }
+            // is currently warning [1]
+            else if(signalState == 1) {
+                // then turn the warning aspect off
+                setPin(Signals[signal][6], false);
+            }
+            // is currently advance warning [2]
+            else if(signalState == 2) {
+                // then turn the warning aspect off
+                setPin(Signals[signal][6], false);
+                // then turn the advance warning aspect off
+                setPin(Signals[signal][7], false);
+            }
+            // is currently pass [3]
+            else if(signalState == 3) {
+                // then turn the pass aspect off
+                setPin(Signals[signal][8], false);
+            }
+        }
+    }
+
+    // Then update the signal state as it has now been changed
+    Signals[signal][3] = state;
 
 }
 
@@ -118,7 +194,7 @@ void setup() {
     // then start the programming and debugging serial port
     Serial.begin(9600);
     // then start the expansion board serial port at a higher data rate
-    Serial1.begin(115200)
+    Serial1.begin(115200);
 
     // then initialise all of the pins as input or output
     // start with the Blocks
@@ -169,13 +245,16 @@ void setup() {
             setPinMode(Signals[i][7], 2);
             setPinMode(Signals[i][8], 2);
         }
+
+        // then initialise the signal as danger
+        changeSignal(i, 0);
     }
 
 };
 
 void loop() {
     // this part of the code continually sets the states of the IsSensorActivated and IsBlockOccupied
-    for(var i = 0; i < sizeof(Blocks)/sizeof(Blocks[0]); i++) {
+    for(int i = 0; i < sizeof(Blocks)/sizeof(Blocks[0]); i++) {
         // 1 - read the sensor
         // isTriggered value - will report if the sensor is triggered - default to true for failsafe
         bool isTriggered = true;
@@ -227,6 +306,15 @@ void loop() {
                 }
             }   
         }
+
+
+        // then print out if the block is occupied and if the sensor is triggered
+        Serial.print("BLOCK: ");
+        Serial.print(i);
+        Serial.print(" OCCUPIED=");
+        Serial.print(Blocks[i][4]);
+        Serial.print( " SENSOR=");
+        Serial.println(Blocks[i][3]);
     }
     
     // this part of the code executes the signal instructions
@@ -247,115 +335,114 @@ void loop() {
             int i3d2 = SignalInstructions[j][9];
             int stateToSet = SignalInstructions[j][2];
             int instructionBooleanOperator = SignalInstructions[j][10];
-            // then switch each instruction type
-            switch(instructionType) {
+            if(instructionType == 0) {
                 // No Instruction
-                case 0: 
-                    // do nothing
-                    break;
+                // do nothing
+            }
+            else if(instructionType == 1) {
                 // Check And Change Signal (1 Check Instruction)
-                case 1:
-                    // then take the instruction in i1d1 and i1d2 and
-                    // check the state of the blocks index in i1d1 occupied state against i1d2
-                    if(Blocks[i1d1][4] == i1d2) {
-                        // then the statement is true so change the signal
-                        changeSignal(i, stateToSet);
-                    }
-                    break;
+                // then take the instruction in i1d1 and i1d2 and
+                // check the state of the blocks index in i1d1 occupied state against i1d2
+                if(Blocks[i1d1][4] == i1d2) {
+                    // then the statement is true so change the signal
+                    changeSignal(i, stateToSet);
+                }
+            }
+            else if(instructionType == 2) {
                 // Check And Change Signal (2 Check Instructions)
-                case 2: 
-                    // then do the same as above but instead store the result in a bool value
-                    // instruction 1
-                    bool i1Result = Blocks[i1d1][4] == i1d2;
-                    // instruction 2
-                    bool i2Result = Blocks[i2d1][4] == i2d2;
-                    // then do the logic
-                    bool combinedResult = false;
-                    if(instructionBooleanOperator == 1) {
-                        // then this is the AND operator so AND the results
-                        combinedResult = i1Result && i2Result;
-                    }
-                    else if(instructionBooleanOperator == 2) {
-                        // then this is the OR operator so OR the results
-                        combinedResult = i1Result || i2Result
-                    }
-                    // then check whether to change the signal
-                    if(combinedResult == true) {
-                        // then change the signal
-                        changeSignal(i, stateToSet);
-                    }
-                    break;
+                // then do the same as above but instead store the result in a bool value
+                // instruction 1
+                bool i1Result = Blocks[i1d1][4] == i1d2;
+                // instruction 2
+                bool i2Result = Blocks[i2d1][4] == i2d2;
+                // then do the logic
+                bool combinedResult = false;
+                if(instructionBooleanOperator == 1) {
+                    // then this is the AND operator so AND the results
+                    combinedResult = i1Result && i2Result;
+                }
+                else if(instructionBooleanOperator == 2) {
+                    // then this is the OR operator so OR the results
+                    combinedResult = i1Result || i2Result;
+                }
+                // then check whether to change the signal
+                if(combinedResult == true) {
+                    // then change the signal
+                    changeSignal(i, stateToSet);
+                }
+            }
+            else if(instructionType == 3) {
                 // Check And Change Signal (3 Check Instructions)
-                case 3: 
-                    // then do the same as above but instead store the result in a bool value
-                    // instruction 1
-                    bool i1Result = Blocks[i1d1][4] == i1d2;
-                    // instruction 2
-                    bool i2Result = Blocks[i2d1][4] == i2d2;
-                    // instruction 3
-                    bool i3Result = Blocks[i3d1][4] == i3d2;
-                    // then do the logic
-                    bool combinedResult = false;
-                    if(instructionBooleanOperator == 1) {
-                        // then this is the AND operator so AND the results
-                        combinedResult = i1Result && i2Result && i3Result;
-                    }
-                    else if(instructionBooleanOperator == 2) {
-                        // then this is the OR operator so OR the results
-                        combinedResult = i1Result || i2Result || i3Result;
-                    }
-                    // then check whether to change the signal
-                    if(combinedResult == true) {
-                        // then change the signal
-                        changeSignal(i, stateToSet);
-                    }
-                    break;
+                // then do the same as above but instead store the result in a bool value
+                // instruction 1
+                bool i1Result = Blocks[i1d1][4] == i1d2;
+                // instruction 2
+                bool i2Result = Blocks[i2d1][4] == i2d2;
+                // instruction 3
+                bool i3Result = Blocks[i3d1][4] == i3d2;
+                // then do the logic
+                bool combinedResult = false;
+                if(instructionBooleanOperator == 1) {
+                    // then this is the AND operator so AND the results
+                    combinedResult = i1Result && i2Result && i3Result;
+                }
+                else if(instructionBooleanOperator == 2) {
+                    // then this is the OR operator so OR the results
+                    combinedResult = i1Result || i2Result || i3Result;
+                }
+                // then check whether to change the signal
+                if(combinedResult == true) {
+                    // then change the signal
+                    changeSignal(i, stateToSet);
+                }
+            }
+            else if(instructionType == 4) {
                 // Change Signals To Pass
-                case 4:
-                    // 1 - then check how many blocks behind are to be set clear behind
-                    if(i1d1 == 1) {
-                        // then set the block at i1d2 to clear
-                        Blocks[i1d2][4] = 0;
-                    }
-                    else if(i1d == 2) {
-                        // then set the block at i1d2 to clear
-                        Blocks[i1d2][4] = 0;
-                        // then set the block at i2d1 to clear
-                        Blocks[i2d1][4] = 0;
-                    }
-                    else if(i1d == 3) {
-                        // then set the block at i1d2 to clear
-                        Blocks[i1d2][4] = 0;
-                        // then set the block at i2d1 to clear
-                        Blocks[i2d1][4] = 0;
-                        // then set the block at i2d2 to clear
-                        Blocks[i2d2][4] = 0;
-                    }
-                    else if(i1d == 4) {
-                        // then set the block at i1d2 to clear
-                        Blocks[i1d2][4] = 0;
-                        // then set the block at i2d1 to clear
-                        Blocks[i2d1][4] = 0;
-                        // then set the block at i2d2 to clear
-                        Blocks[i2d2][4] = 0;
-                        // then set the block at i3d1 to clear
-                        Blocks[i3d1][4] = 0;
-                    }
-                    else if(i1d == 5) {
-                        // then set the block at i1d2 to clear
-                        Blocks[i1d2][4] = 0;
-                        // then set the block at i2d1 to clear
-                        Blocks[i2d1][4] = 0;
-                        // then set the block at i2d2 to clear
-                        Blocks[i2d2][4] = 0;
-                        // then set the block at i3d1 to clear
-                        Blocks[i3d1][4] = 0;
-                        // then set the block at i3d2 to clear
-                        Blocks[i3d2][4] = 0;
-                    }
-                    break;
+                // 1 - then check how many blocks behind are to be set clear behind
+                if(i1d1 == 1) {
+                    // then set the block at i1d2 to clear
+                    Blocks[i1d2][4] = 0;
+                }
+                else if(i1d1 == 2) {
+                    // then set the block at i1d2 to clear
+                    Blocks[i1d2][4] = 0;
+                    // then set the block at i2d1 to clear
+                    Blocks[i2d1][4] = 0;
+                }
+                else if(i1d1 == 3) {
+                    // then set the block at i1d2 to clear
+                    Blocks[i1d2][4] = 0;
+                    // then set the block at i2d1 to clear
+                    Blocks[i2d1][4] = 0;
+                    // then set the block at i2d2 to clear
+                    Blocks[i2d2][4] = 0;
+                }
+                else if(i1d1 == 4) {
+                    // then set the block at i1d2 to clear
+                    Blocks[i1d2][4] = 0;
+                    // then set the block at i2d1 to clear
+                    Blocks[i2d1][4] = 0;
+                    // then set the block at i2d2 to clear
+                    Blocks[i2d2][4] = 0;
+                    // then set the block at i3d1 to clear
+                    Blocks[i3d1][4] = 0;
+                }
+                else if(i1d1 == 5) {
+                    // then set the block at i1d2 to clear
+                    Blocks[i1d2][4] = 0;
+                    // then set the block at i2d1 to clear
+                    Blocks[i2d1][4] = 0;
+                    // then set the block at i2d2 to clear
+                    Blocks[i2d2][4] = 0;
+                    // then set the block at i3d1 to clear
+                    Blocks[i3d1][4] = 0;
+                    // then set the block at i3d2 to clear
+                    Blocks[i3d2][4] = 0;
+                }
             }
         }
     }
+
+    delay(10);
 
 };
