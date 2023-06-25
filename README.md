@@ -60,6 +60,16 @@
 
 ### **The Line That The Block Is On [6]** - This is an **INT** type at index **6** stating the index in the LinesList of which line this block is on, This is used so that it can be cleared and so that it can be ignored with the ignore button
 
+## **SensorLastTriggeredTime**
+
+>This array contains a variable that is set to the millis() when the sensor is considered occupied. Then when the sensor becomes clear and is checked again it can be checked if a predetermined time has passed to state that the sensor is actually clear (effectively a long debounce on the sensor). And if the amount of time has been passed then the block behind can be considered clear
+
+In the check care must be taken to ensure that the last time the sensor was triggered is greater than the time that the sensor behind was triggered whilst also checking for the SensorDebounceTime
+
+
+**The last time that your sensor was high needs to be newer than the time that the block you are resetting's sensor was high**
+
+
 ## **Signal**
 
 >The Signal array contains a nested array of information about each signal and what block it belongs to and what it's instructions are
