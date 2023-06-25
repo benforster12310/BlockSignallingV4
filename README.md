@@ -84,7 +84,7 @@ In the check care must be taken to ensure that the last time the sensor was trig
 7. Signal Advance Warning Pin
 8. Signal Pass Pin
 9. Signal Instructions Start Index
-10. Signal Instructions Stop Index
+10. Signal Instructions Stop After Index
 
 ### **Signal ID [0]** - This is an **INT** type at index **0** stating what ID number the signal is, This must always match it's array index position
 
@@ -106,7 +106,7 @@ In the check care must be taken to ensure that the last time the sensor was trig
 
 ### **Signal Instructions Start Index [9]** - This is an **INT** type at index **9** stating what index in the SignalInstructions array to start at 
 
-### **Signal Instructions Stop Index [10]** - This is an **INT** type at index **10** stating what is the last index in the SignalInstructions array that will be done on this signal
+### **Signal Instructions Stop After Index [10]** - This is an **INT** type at index **10** stating what is the last index in the SignalInstructions array that will be done on this signal
 
 
 ## **SignalInstructions**
@@ -116,7 +116,7 @@ In the check care must be taken to ensure that the last time the sensor was trig
 0. Instruction ID
 1. Signal ID
 2. StateToSet
-3. InstructionIndexInList
+3. InstructionIndexInSignalInstuctionsList
 4. Instruction1Data1
 5. Instruction1Data2
 6. Instruction2Data1
@@ -143,14 +143,13 @@ In the check care must be taken to ensure that the last time the sensor was trig
 
 ### **Check And Change Signal (3 Check Instructions) [3]** - this **INT** type is exactly the same as the above but with another instruction totalling 3. The boolean operator applies to the result of all these instructions
 
-### **Change Signals To Pass [4]** this takes the number from **Instruction1Data1** and then sets the number of blocks behind to clear
+### **Change Signals To Pass [4]** this takes the Block Id from the 5 available instructions and then sets them to clear, the first instruction data 1 is used to say how many of the 5 blocks behind are to be cleared
 
 ## Boolean Operators List
 
 0. No Operator
 1. AND
 2. OR
-3. XOR
 
 ## Control Pushbuttons
 
