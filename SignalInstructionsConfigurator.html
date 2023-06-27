@@ -1,4 +1,37 @@
 <html>
+    <style>
+        .textLabel {
+            width: 100%;
+            font-size: 250%;
+            background-color: lime;
+            text-align: center;
+        }
+        .entryTextarea {
+            width: 100%;
+            font-size: 200%;
+            height: 12%;
+        }
+        input {
+            width: 100%;
+            font-size: 200%;
+            text-align: center;
+        }
+        button {
+            width: 100%;
+            font-size: 250%;
+            text-align: center;
+            background-color: aqua;
+        }
+        button:hover {
+            cursor: pointer;
+            background-color: lime;
+        }
+        select {
+            width: 100%;
+            font-size: 200%;
+            text-align: center;
+        }
+    </style>
     <body>
         <select id="selectElement">
             <option value="0">Home Semaphore</option>
@@ -9,41 +42,116 @@
             <option value="5">3 Aspect Colour Light</option>
             <option value="6">4 Aspect Colour Light</option>
         </select>
+        <br/>
+        <br/>
+        <input type="number" id="blockID" placeholder="Block ID">
+        <br/>
+        <br/>
+        <input type="number" id="sensorPin" placeholder="Sensor Pin">
+        <br/>
+        <br/>
+        <input type="number" id="sensorHighOnActivation" placeholder="Sensor High On Activation" value="0">
+        <br/>
+        <br/>
+        <input type="number" id="blockIDBehind" placeholder="Block ID Behind">
+        <br/>
+        <br/>
+        <input type="number" id="blockLine" placeholder="Line That The Block Is On">
+        <br/>
+        <br/>
         <input type="number" id="signalID" placeholder="Signal ID">
+        <br/>
+        <br/>
         <input type="number" id="signalChangePin" placeholder="Signal Change Pin (semaphore)">
+        <br/>
+        <br/>
         <input type="number" id="signalDangerPin" placeholder="Signal Danger Pin">
+        <br/>
+        <br/>
         <input type="number" id="signalWarningPin" placeholder="Signal Warning Pin">
+        <br/>
+        <br/>
         <input type="number" id="signalAdvanceWarningPin" placeholder="Signal Advance Warning Pin">
+        <br/>
+        <br/>
         <input type="number" id="signalPassPin" placeholder="Signal Pass Pin">
+        <br/>
+        <br/>
         <input type="number" id="infront1" placeholder="Block ID First Infront">
+        <br/>
+        <br/>
         <input type="number" id="infront2" placeholder="Block ID Second Infront">
+        <br/>
+        <br/>
         <input type="number" id="infront3" placeholder="Block ID Third Infront">
+        <br/>
+        <br/>
         <input type="number" id="infront4" placeholder="Block ID Fourth Infront">
+        <br/>
+        <br/>
         <input type="number" id="instructionStartIndex" placeholder="Instruction Start At">
-        
-        <button onclick="createInstruction()">Create Instruction</button>
+        <br/>
+        <br/>        
+        <button onclick="create()">Create</button>
         <br/>
         <br/>
         <p class="textLabel">Block</p>
         <br/>
         <textarea class="entryTextarea" id="Blocks"></textarea>
+        <br/>
+        <br/>
+        <button onclick="navigator.clipboard.writeText(document.getElementById('Blocks').value); window.alert('Copied');" >Copy Blocks Code</button>
         <p class="textLabel">Signal</p>
         <br/>
         <textarea class="entryTextarea" id="Signals"></textarea>
+        <br/>
+        <br/>
+        <button onclick="navigator.clipboard.writeText(document.getElementById('Signals').value); window.alert('Copied');" >Copy Signals Code</button>
         <p class="textLabel">Signal Instructions</p>
         <br/>
         <textarea class="entryTextarea" id="SignalInstructions"></textarea>
+        <br/>
+        <br/>
+        <button onclick="navigator.clipboard.writeText(document.getElementById('SignalInstructions').value); window.alert('Copied');" >Copy Signal Instructions Code</button>
     </body>
     <script>
-        function createInstruction() {
-            var type = document.getElementById("selectElement").value;
+        function create() {
+            var type = parseInt(document.getElementById("selectElement").value);
+            var blockID = parseInt(document.getElementById("blockID").value);
+            var sensorPin = parseInt(document.getElementById("sensorPin").value);
+            var sensorHighOnActivation = parseInt(document.getElementById("sensorHighOnActivation").value);
+            var blockIDBehind = parseInt(document.getElementById("blockIDBehind").value);
+            var blockLine = parseInt(document.getElementById("blockLine").value);
             var signalID = parseInt(document.getElementById("signalID").value);
+            var signalChangePin = parseInt(document.getElementById("signalChangePin").value);
+            if(signalChangePin == NaN) {
+                signalChangePin = 0;
+            }
+            var signalDangerPin = parseInt(document.getElementById("signalDangerPin").value);
+            if(signalDangerPin == NaN) {
+                signalDangerPin = 0;
+            }
+            var signalWarningPin = parseInt(document.getElementById("signalWarningPin").value);
+            if(signalWarningPin == NaN) {
+                signalWarningPin = 0;
+            }
+            var signalAdvancedWarningPin = parseInt(document.getElementById("signalAdvanceWarningPin").value);            
+            if(signalAdvancedWarningPin == NaN) {
+                signalAdvancedWarningPin = 0;
+            }
+            var signalPassPin = parseInt(document.getElementById("signalPassPin").value);
+            if(signalPassPin == NaN) {
+                signalPassPin = 0;
+            }
             var infront1 = parseInt(document.getElementById("infront1").value);
             var infront2 = parseInt(document.getElementById("infront2").value);
             var infront3 = parseInt(document.getElementById("infront3").value);
             var infront4 = parseInt(document.getElementById("infront4").value);
             var instructionStartIndex = parseInt(document.getElementById("instructionStartIndex").value);
+            // home semaphore [0]
+            var totalInstructions = 0;
             if(type == 0) {
+                totalInstructions = 2;
                 // then only 2 instructions are needed so make them
                 // instruction 1 - prove the signal to be at danger
                 var instruction1 = "{" + instructionStartIndex + ", " + signalID + ", 0, 1, " + infront1 + ", 1, 0, 0, 0, 0, 0}, // signal " + signalID + " danger if block infront occupied";
@@ -53,6 +161,58 @@
                 // then put them into a textarea
                 document.getElementById("SignalInstructions").value = instruction1 + "\n" + instruction2;
             }
+            // distant semaphore [1]
+            else if(type == 1) {
+                totalInstructions = 2;
+                // then only 2 instructions are needed so make them
+                // instruction 1 - prove the signal to be at warning
+                var instruction1 = "{" + instructionStartIndex + ", " + signalID + ", 1, 2, " + infront1 + ", 1, " + infront2 + ", 1, 0, 0, 2}, // signal " + signalID + " warning if block infront1 or infront2 occupied";
+                // instruction 2 - prove the signal to be at pass
+                var instruction2 = "{" + (instructionStartIndex+1) + ", " + signalID + ", 3, 2, " + infront1 + ", 0, " + infront2 +", 0, 0, 0, 1}, // signal " + signalID + " pass if block infront1 & infront2 clear";
+
+                // then put them into a textarea
+                document.getElementById("SignalInstructions").value = instruction1 + "\n" + instruction2;
+            }
+            // 2 Aspect Colour Light (Danger & Pass) [2]
+            else if(type == 2) {
+                totalInstructions = 2;
+
+            }
+
+            // 2 Aspect Colour Light (Danger & Warning) [3]
+            else if(type == 3) {
+                totalInstructions = 2;
+
+            }
+
+            // 2 Aspect Colour Light (Warning & Pass) [4]
+            else if(type == 4) {
+                totalInstructions = 2;
+
+            }
+
+            // 3 Aspect Colour Light [5]
+            else if(type == 5) {
+                totalInstructions = 3;
+                // then 3 instructions are required
+                // instruction 1 - prove the signal to be at danger when the block infront is occupied
+                var instruction1 = "{" + instructionStartIndex + ", " + signalID + ", 0, 1, " + infront1 + ", 1, 0, 0, 0, 0, 0} // signal " + signalID + " danger when block infront1 occupied";
+
+            }
+            
+            // 4 Aspect Colour Light [6]
+            else if(type == 6) {
+                totalInstructions = 4;
+
+            }
+
+            // then make the block entry
+            var block = "{" + blockID + ", " + sensorPin + ", " + sensorHighOnActivation + ", 0, 0, " + blockIDBehind + ", " + blockLine + "}";
+            // then make the signal entry
+            var signal = "{" + signalID + ", " + blockID + ", " + type + ", 0, " + signalChangePin + ", " + signalDangerPin + ", " + signalWarningPin + ", " + signalAdvancedWarningPin + ", " + signalPassPin + ", " + instructionStartIndex + ", " + (instructionStartIndex + totalInstructions-1) + "}";
+
+            document.getElementById("Blocks").value = block;
+            document.getElementById("Signals").value = signal;
         }
     </script>
 </html>
