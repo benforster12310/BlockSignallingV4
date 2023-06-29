@@ -34,12 +34,12 @@
     </style>
     <body>
         <select id="selectElement">
+            <option value="5">3 Aspect Colour Light</option>
             <option value="0">Home Semaphore</option>
             <option value="1">Distant Semaphore</option>
             <option value="2">2 Aspect Colour Light Danger & Pass</option>
             <option value="3">2 Aspect Colour Light Danger & Warning</option>
             <option value="4">2 Aspect Colour Light Warning & Pass</option>
-            <option value="5">3 Aspect Colour Light</option>
             <option value="6">4 Aspect Colour Light</option>
         </select>
         <br/>
@@ -124,23 +124,29 @@
             var blockLine = parseInt(document.getElementById("blockLine").value);
             var signalID = parseInt(document.getElementById("signalID").value);
             var signalChangePin = parseInt(document.getElementById("signalChangePin").value);
-            if(signalChangePin == NaN) {
+            console.log(signalChangePin)
+            if(isNaN(signalChangePin)) {
+                console.log("signalChangePin changed from NaN to 0");
                 signalChangePin = 0;
             }
             var signalDangerPin = parseInt(document.getElementById("signalDangerPin").value);
-            if(signalDangerPin == NaN) {
+            if(isNaN(signalDangerPin)) {
+                console.log("signalDangerPin changed from NaN to 0");
                 signalDangerPin = 0;
             }
             var signalWarningPin = parseInt(document.getElementById("signalWarningPin").value);
-            if(signalWarningPin == NaN) {
+            if(isNaN(signalWarningPin)) {
+                console.log("signalWarningPin changed from NaN to 0");
                 signalWarningPin = 0;
             }
-            var signalAdvancedWarningPin = parseInt(document.getElementById("signalAdvanceWarningPin").value);            
-            if(signalAdvancedWarningPin == NaN) {
-                signalAdvancedWarningPin = 0;
+            var signalAdvanceWarningPin = parseInt(document.getElementById("signalAdvanceWarningPin").value);            
+            if(isNaN(signalAdvanceWarningPin)) {
+                console.log("signalAdvanceWarningPin changed from NaN to 0");
+                signalAdvanceWarningPin = 0;
             }
             var signalPassPin = parseInt(document.getElementById("signalPassPin").value);
-            if(signalPassPin == NaN) {
+            if(isNaN(signalPassPin)) {
+                console.log("signalPassPin changed from NaN to 0");
                 signalPassPin = 0;
             }
             var infront1 = parseInt(document.getElementById("infront1").value);
@@ -154,9 +160,9 @@
                 totalInstructions = 2;
                 // then only 2 instructions are needed so make them
                 // instruction 1 - prove the signal to be at pass
-                var instruction1 = "{" + (instructionStartIndex+1) + ", " + signalID + ", 3, 1, " + infront1 + ", 0, 0, 0, 0, 0, 0}, // signal " + signalID + " pass if block infront clear";
+                var instruction1 = "{" + instructionStartIndex + ", " + signalID + ", 3, 1, " + infront1 + ", 0, 0, 0, 0, 0, 0}, // signal " + signalID + " pass if block infront clear";
                 // instruction 2 - prove the signal to be at danger
-                var instruction2 = "{" + instructionStartIndex + ", " + signalID + ", 0, 1, " + infront1 + ", 1, 0, 0, 0, 0, 0}, // signal " + signalID + " danger if block infront occupied";
+                var instruction2 = "{" + (instructionStartIndex+1) + ", " + signalID + ", 0, 1, " + infront1 + ", 1, 0, 0, 0, 0, 0}, // signal " + signalID + " danger if block infront occupied";
 
                 // then put them into a textarea
                 document.getElementById("SignalInstructions").value = instruction1 + "\n" + instruction2;
@@ -166,9 +172,9 @@
                 totalInstructions = 2;
                 // then only 2 instructions are needed so make them
                 // instruction 1 - prove the signal to be at pass
-                var instruction2 = "{" + (instructionStartIndex+1) + ", " + signalID + ", 3, 2, " + infront1 + ", 0, " + infront2 +", 0, 0, 0, 1}, // signal " + signalID + " pass if block infront1 & infront2 clear";
+                var instruction1 = "{" + instructionStartIndex + ", " + signalID + ", 3, 2, " + infront1 + ", 0, " + infront2 +", 0, 0, 0, 1}, // signal " + signalID + " pass if block infront1 & infront2 clear";
                 // instruction 2 - prove the signal to be at warning
-                var instruction2 = "{" + instructionStartIndex + ", " + signalID + ", 1, 2, " + infront1 + ", 1, " + infront2 + ", 1, 0, 0, 2}, // signal " + signalID + " warning if block infront1 or infront2 occupied";
+                var instruction2 = "{" + (instructionStartIndex+1) + ", " + signalID + ", 1, 2, " + infront1 + ", 1, " + infront2 + ", 1, 0, 0, 2}, // signal " + signalID + " warning if block infront1 or infront2 occupied";
 
                 // then put them into a textarea
                 document.getElementById("SignalInstructions").value = instruction1 + "\n" + instruction2;
@@ -178,9 +184,9 @@
                 totalInstructions = 2;
                 // then only 2 instructions are needed so make them
                 // instruction 1 - prove the signal to be at pass
-                var instruction1 = "{" + (instructionStartIndex+1) + ", " + signalID + ", 3, 1, " + infront1 + ", 0, 0, 0, 0, 0, 0}, // signal " + signalID + " pass if block infront1 clear";
+                var instruction1 = "{" + instructionStartIndex + ", " + signalID + ", 3, 1, " + infront1 + ", 0, 0, 0, 0, 0, 0}, // signal " + signalID + " pass if block infront1 clear";
                 // instruction 2 - prove the signal to be at danger
-                var instruction2 = "{" + instructionStartIndex + ", " + signalID + ", 0, 0, 1, " + infront1 + ", 1, 0, 0, 0, 0, 0}, // signal " + signalID + " danger if block infront1 occupied";
+                var instruction2 = "{" + (instructionStartIndex+1) + ", " + signalID + ", 0, 0, 1, " + infront1 + ", 1, 0, 0, 0, 0, 0}, // signal " + signalID + " danger if block infront1 occupied";
 
                 // then put them into a textarea
                 document.getElementById("SignalInstructions").value = instruction1 + "\n" + instruction2;
@@ -203,9 +209,9 @@
                 totalInstructions = 2;
                 // then only 2 instructions are needed so make them
                 // instruction 1 - prove the signal to be at pass
-                var instruction2 = "{" + (instructionStartIndex+1) + ", " + signalID + ", 3, 2, " + infront1 + ", 0, " + infront2 +", 0, 0, 0, 1}, // signal " + signalID + " pass if block infront1 & infront2 clear";
+                var instruction1 = "{" + instructionStartIndex + ", " + signalID + ", 3, 2, " + infront1 + ", 0, " + infront2 +", 0, 0, 0, 1}, // signal " + signalID + " pass if block infront1 & infront2 clear";
                 // instruction 2 - prove the signal to be at warning
-                var instruction2 = "{" + instructionStartIndex + ", " + signalID + ", 1, 2, " + infront1 + ", 1, " + infront2 + ", 1, 0, 0, 2}, // signal " + signalID + " warning if block infront1 or infront2 occupied";
+                var instruction2 = "{" + (instructionStartIndex+1) + ", " + signalID + ", 1, 2, " + infront1 + ", 1, " + infront2 + ", 1, 0, 0, 2}, // signal " + signalID + " warning if block infront1 or infront2 occupied";
 
                 // then put them into a textarea
                 document.getElementById("SignalInstructions").value = instruction1 + "\n" + instruction2;
@@ -217,11 +223,11 @@
                 totalInstructions = 3;
                 // then 3 instructions are required
                 // instruction 1 - prove the signal to be at pass when the block infront1 is clear and block infront2 is clear
-                var instruction3 = "{" + instructionStartIndex + ", " + signalID + ", 3, 2, " + infront1 + ", 0, " + infront2 + ", 0, 0, 0, 1} // signal " + signalID + " pass when block infront1 clear and block infront2 clear";
+                var instruction1 = "{" + instructionStartIndex + ", " + signalID + ", 3, 2, " + infront1 + ", 0, " + infront2 + ", 0, 0, 0, 1}, // signal " + signalID + " pass when block infront1 clear and block infront2 clear";
                 // instruction 2 - prove the signal to be at warning when the block infront1 is clear and block infront2 is occupied
-                var instruction2 = "{" + instructionStartIndex + ", " + signalID + ", 1, 2, " + infront1 + ", 0, " + infront2 + ", 1, 0, 0, 1} // signal " + signalID + " warning when block infront1 clear and block infront2 occupied";
+                var instruction2 = "{" + (instructionStartIndex+1) + ", " + signalID + ", 1, 2, " + infront1 + ", 0, " + infront2 + ", 1, 0, 0, 1}, // signal " + signalID + " warning when block infront1 clear and block infront2 occupied";
                 // instruction 3 - prove the signal to be at danger when the block infront1 is occupied
-                var instruction3 = "{" + instructionStartIndex + ", " + signalID + ", 0, 1, " + infront1 + ", 1, 0, 0, 0, 0, 0} // signal " + signalID + " danger when block infront1 occupied";
+                var instruction3 = "{" + (instructionStartIndex+2) + ", " + signalID + ", 0, 1, " + infront1 + ", 1, 0, 0, 0, 0, 0}, // signal " + signalID + " danger when block infront1 occupied";
 
                 // then put them into a textarea
                 document.getElementById("SignalInstructions").value = instruction1 + "\n" + instruction2 + "\n" + instruction3;
@@ -232,13 +238,13 @@
                 totalInstructions = 4;
                 // then 4 instructions are required
                 // instruction 1 - prove the signal to be at pass when the block infront1 is clear and block infront2 is clear and block infront3 is clear
-                var instruction1 = "{" + instructionStartIndex + ", " + signalID + ", 3, 3, " + infront1 + ", 0, " + infront2 + ", 0, " + infront3 + ", 0, 1} // signal " + signalID + " pass when block infront1 clear and block infront2 clear and block infront3 clear";
+                var instruction1 = "{" + instructionStartIndex + ", " + signalID + ", 3, 3, " + infront1 + ", 0, " + infront2 + ", 0, " + infront3 + ", 0, 1}, // signal " + signalID + " pass when block infront1 clear and block infront2 clear and block infront3 clear";
                 // instruction 2 - prove the signal to be at advance warning when the block infront1 is clear and block infront2 is clear and block infront3 is occupied
-                var instruction2 = "{" + instructionStartIndex + ", " + signalID + ", 2, 3, " + infront1 + ", 0, " + infront2 + ", 1, " + infront3 + ", 1, 1} // signal " + signalID + " advance warning when block infront1 clear and block infront2 clear and block infront3 occupied";
+                var instruction2 = "{" + (instructionStartIndex+1) + ", " + signalID + ", 2, 3, " + infront1 + ", 0, " + infront2 + ", 1, " + infront3 + ", 1, 1}, // signal " + signalID + " advance warning when block infront1 clear and block infront2 clear and block infront3 occupied";
                 // instruction 3 - prove the signal to be at warning when the block infront1 is clear and block infront2 is occupied
-                var instruction3 = "{" + instructionStartIndex + ", " + signalID + ", 1, 2, " + infront1 + ", 0, " + infront2 + ", 1, 0, 0, 1} // signal " + signalID + " warning when block infront1 clear and block infront2 occupied";
+                var instruction3 = "{" + (instructionStartIndex+2) + ", " + signalID + ", 1, 2, " + infront1 + ", 0, " + infront2 + ", 1, 0, 0, 1}, // signal " + signalID + " warning when block infront1 clear and block infront2 occupied";
                 // instruction 4 - prove the signal to be at danger when the block infront1 is occupied
-                var instruction4 = "{" + instructionStartIndex + ", " + signalID + ", 0, 1, " + infront1 + ", 1, 0, 0, 0, 0, 0} // signal " + signalID + " danger when block infront1 occupied";
+                var instruction4 = "{" + (instructionStartIndex+3) + ", " + signalID + ", 0, 1, " + infront1 + ", 1, 0, 0, 0, 0, 0}, // signal " + signalID + " danger when block infront1 occupied";
 
                 // then put them into a textarea
                 document.getElementById("SignalInstructions").value = instruction1 + "\n" + instruction2 + "\n" + instruction3;
@@ -247,7 +253,7 @@
             // then make the block entry
             var block = "{" + blockID + ", " + sensorPin + ", " + sensorHighOnActivation + ", 0, 0, " + blockIDBehind + ", " + blockLine + "}";
             // then make the signal entry
-            var signal = "{" + signalID + ", " + blockID + ", " + type + ", 0, " + signalChangePin + ", " + signalDangerPin + ", " + signalWarningPin + ", " + signalAdvancedWarningPin + ", " + signalPassPin + ", " + instructionStartIndex + ", " + (instructionStartIndex + totalInstructions-1) + "}";
+            var signal = "{" + signalID + ", " + blockID + ", " + type + ", 0, " + signalChangePin + ", " + signalDangerPin + ", " + signalWarningPin + ", " + signalAdvanceWarningPin + ", " + signalPassPin + ", " + instructionStartIndex + ", " + (instructionStartIndex + totalInstructions-1) + "}";
 
             document.getElementById("Blocks").value = block;
             document.getElementById("Signals").value = signal;
