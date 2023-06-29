@@ -195,8 +195,12 @@
             else if(type == 5) {
                 totalInstructions = 3;
                 // then 3 instructions are required
-                // instruction 1 - prove the signal to be at danger when the block infront is occupied
+                // instruction 1 - prove the signal to be at danger when the block infront1 is occupied
                 var instruction1 = "{" + instructionStartIndex + ", " + signalID + ", 0, 1, " + infront1 + ", 1, 0, 0, 0, 0, 0} // signal " + signalID + " danger when block infront1 occupied";
+                // instruction 2 - prove the signal to be at warning when the block infront1 is clear and block infront2 is occupied
+
+                // instruction 3 - prove the signal to be at pass when the block infront1 is clear and block infront2 is clear
+                // need to swap these so danger is last so danger will always be the last case if its right
 
             }
             
