@@ -18,3 +18,8 @@ void setup() {
 	
 }
 
+void loop() {
+	// then use ArduinoJson to check for new commands
+	
+}
+
