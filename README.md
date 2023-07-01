@@ -162,3 +162,8 @@ SetPinMode()
 0 = INPUT_PULLUP
 1 = INPUT
 2 = OUTPUT
+
+Serial1 Instructions
+0 = SetPinMode
+1 = SetPin
+

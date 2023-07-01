@@ -55,7 +55,7 @@ void setPinMode(int pin, int mode) {
     if(pin >= 100) {
         // then it is so make the JSON
         StaticJsonDocument<48> document;
-        document["instruction"] = "SPM";
+        document["instruction"] = 0; // SetPinMode
         document["data1"] = pin;
         document["data2"] = mode;
         
@@ -88,7 +88,7 @@ void setPin(int pin, bool high) {
     if(pin >= 100) {
         // then it is so make the JSON
         StaticJsonDocument<48> document;
-        document["instruction"] = "SP";
+        document["instruction"] = 1; // SetPin
         document["data1"] = pin;
         document["data2"] = high;
 
