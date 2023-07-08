@@ -36,17 +36,17 @@ void loop() {
         }
         
         // then check the instruction
-        int instructionType = document["instruction"].as<int>;
+        int instructionType = document["instruction"];
 
         // then get the pin from the data1 variable
-        int pin = document["data1"].as<int>;
+        int pin = document["data1"];
 
         pin = pin - pinToSubtract;
         
         // SetPinMode
         if(instructionType == 0) {
             // then get the pin mode from the data2 variable
-            int PinMode = document["data2"].as<int>;
+            int PinMode = document["data2"];
             // then get the pin from
             // then check what PinMode to set the pin to
             if(PinMode == 0) {
@@ -65,7 +65,7 @@ void loop() {
         // SetPin
         else if(instructionType == 1) {
             // then check whether to set the pin high or low from the data2 variable
-            bool high = document["data2"].as<bool>;
+            bool high = document["data2"];
             if(high == true) {
                 // then set the pin high
                 digitalWrite(pin, HIGH);
@@ -77,4 +77,3 @@ void loop() {
         }
     }
 }
-
