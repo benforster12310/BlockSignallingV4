@@ -2,7 +2,8 @@
 
 // First, Define some things
 
-#include "ArduinoJson.h";
+#include "ArduinoJson.h"
+#include "ArduinoTimer.h"
 
 // Sensor Debounce Time - how long a sensor must be clear until the block behind it is cleared
 unsigned long SensorDebounceTime = 4000;
@@ -11,8 +12,27 @@ unsigned long SensorDebounceTime = 4000;
 // used to turn the relay on and off. Should be kept as low as possible (milliseconds)
 const int RelayHoldTime = 100;
 
+// then define the RedTrackResetButtonPin, BlueTrackResetButtonPin, RedTrackWrongWayRunningLedPin, BlueTrackWrongWayRunningLedPin, RedTrackTrainInCarriageSidingButtonPin, RedTrackTrainInBayPlatformButtonPin
+const int RTResetButtonPin = 0;
+const int RTWrongWayRunningLedPin = 0;
+const int BTResetButtonPin = 0;
+const int BTWrongWayRunningLedPin = 0;
+const int RTTrainInCarriageSidingButtonPin = 0;
+const int RTTrainInBayPlatformButtonPin = 0;
+
+bool RTResetButtonPressed = false;
+bool BTResetButtonPressed = false;
+
+unsigned long RTResetButtonPressedTime = 0;
+unsigned long BTResetButtonPressedTime = 0;
+
+bool RTAllowWrongWayRunning = false;
+bool BTAllowWrongWayRunning = false; 
+
 // Lines List - Track - See Documentation
-const int LinesList[6] = {1,2,3,4,5,6};
+const int LinesList[4] = {1,2,3,4};
+
+int ignoredLines[5] = {0,0,0,0,0};
 
 // Blocks Array
 int Blocks[3][7] = {
@@ -46,6 +66,29 @@ const int SignalInstructions[9][11] = {
     {7, 2, 1, 2, 0, 0, 1, 1, 0, 0, 1}, //signal 2 warning if block infront clear and block infront of that occupied
     {8, 2, 3, 2, 0, 0, 1, 0, 0, 0, 1}  //signal 2 pass if block infront clear and block infront of that clear
 };
+
+// ################### Simple Semaphore Signals #############################
+int simpleSemaphoreSignals_relayHoldTime = 250;
+int simpleSemaphoreSignals_timeUntilReset = 10000;
+int simpleSemaphoreSignals_resetToDangerPin = 2;
+ArduinoTimer simpleSemaphoreSignals_timersArray[4];
+
+int simpleSemaphoreSignals_semaphoresArray[4][5] = {
+// 0: id, 1: semaphoreChangePin, 2: semaphoreSensorPin, 3: semaphoreState, 4: timerStarted
+  // 0  1  2  3  4
+    {0, 0, 0, 0, 0},
+    {1, 0, 0, 0, 0},
+    {2, 0, 0, 0, 0},
+    {3, 0, 0, 0, 0}
+};
+
+int simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin = 0;
+int simpleSemaphoreSignals_pointActivatedSemaphoreDangerInputPin = 0;
+int simpleSemaphoreSignals_pointActivatedSemaphorePassInputPin = 0;
+int simpleSemaphoreSignals_pointActivatedSemaphoreSignalState = 0;
+
+
+// ##################### END Simple Semaphore Signals ########################
 
 // setPinMode function
 // this function takes a pin and then checks if it is locally on this board or whether it is on the other board
@@ -250,11 +293,62 @@ void setup() {
         changeSignal(i, 0);
     }
 
+
+    // ##################### Simple Semaphore Signals #########################
+
+    // Go through and set the pin modes of the signal change pins 
+
+    for(int i = 0; i < sizeof(simpleSemaphoreSignals_semaphoresArray)/sizeof(simpleSemaphoreSignals_semaphoresArray[0]); i++) {
+        // then set the sensor pin as INPUT_PULLUP
+        pinMode(simpleSemaphoreSignals_semaphoresArray[i][2], INPUT_PULLUP);
+        // then set the signalChangePin as OUTPUT
+        pinMode(simpleSemaphoreSignals_semaphoresArray[i][1], OUTPUT);
+    }
+
+    // then set the reset to danger pin to INPUT_PULLUP
+    pinMode(simpleSemaphoreSignals_resetToDangerPin, INPUT_PULLUP);
+
+    // then set the pointActivatedSemaphore relay to output
+    pinMode(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, OUTPUT);
+
+    // then set the pointActivatedSemaphore danger input to INPUT_PULLUP
+    pinMode(simpleSemaphoreSignals_pointActivatedSemaphoreDangerInputPin, INPUT_PULLUP);
+
+    // then set the pointActivatedSemaphore pass input to INPUT_PULLUP
+    pinMode(simpleSemaphoreSignals_pointActivatedSemaphorePassInputPin, INPUT_PULLUP);
+
+    // ##################### End Of Simple Semaphore Signals ##################
+
+    // set the control panel button inputs and outputs
+    pinMode(RTResetButtonPin, INPUT_PULLUP);
+    pinMode(RTWrongWayRunningLedPin, OUTPUT);
+    pinMode(BTResetButtonPin, INPUT_PULLUP);
+    pinMode(BTWrongWayRunningLedPin, OUTPUT);
+    pinMode(RTTrainInBayPlatformButtonPin, INPUT_PULLUP);
+    pinMode(RTTrainInCarriageSidingButtonPin, INPUT_PULLUP);
+
 };
 
 void loop() {
     // this part of the code continually sets the states of the IsSensorActivated and IsBlockOccupied
     for(int i = 0; i < sizeof(Blocks)/sizeof(Blocks[0]); i++) {
+        // check what lines are being ignored 
+        bool ignoreBlock = false;
+        for(int j = 0; j < sizeof(ignoredLines); j++) {
+            // then check if the line that the block is on is being ignored
+            if(Blocks[i][6] == ignoredLines[j]) {
+                // set ignoreBlock to true and break from the loop
+                ignoreBlock = true;
+                break;
+            }
+        }
+        // then check if the block was ignored 
+        if(ignoreBlock == true) {
+            // then set the block to be clear and break from the loop
+            Blocks[i][3] = 0;
+            Blocks[i][4] = 0;
+            break;
+        }
         // 1 - read the sensor
         // isTriggered value - will report if the sensor is triggered - default to true for failsafe
         bool isTriggered = true;
@@ -442,6 +536,233 @@ void loop() {
             }
         }
     }
+
+
+    // ################### Simple Semaphore Signals ######################
+
+    // then go through each signal
+    for(int i = 0; i < sizeof(simpleSemaphoreSignals_semaphoresArray)/sizeof(simpleSemaphoreSignals_semaphoresArray[0]); i++) {
+        // then check if the sensor before the signal has been activated
+        if(digitalRead(simpleSemaphoreSignals_semaphoresArray[i][2]) == LOW) {
+            // then check if the signal is set to danger
+            if(simpleSemaphoreSignals_semaphoresArray[i][3] == 0) {
+                // then it is set to danger so change it to pass
+                digitalWrite(simpleSemaphoreSignals_semaphoresArray[i][1], HIGH);
+                // set the state to pass
+                simpleSemaphoreSignals_semaphoresArray[i][3] = 1;
+                delay(simpleSemaphoreSignals_relayHoldTime);
+                digitalWrite(simpleSemaphoreSignals_semaphoresArray[i][1], LOW);
+            }
+        }
+        else {
+            // then make sure that the signal is at pass
+            if(simpleSemaphoreSignals_semaphoresArray[i][3] == 1) {
+                // then check if the timer has been started and if it hasnt then start it
+                if(simpleSemaphoreSignals_semaphoresArray[i][4] == 0) {
+                    // then start the timer
+                    simpleSemaphoreSignals_timersArray[i].Reset();
+                    // then set the timer as started
+                    simpleSemaphoreSignals_semaphoresArray[i][4] = 1;
+                }
+                // then check if the required time has passed and check if the timer has started
+                if(simpleSemaphoreSignals_timersArray[i].TimePassed_Milliseconds(simpleSemaphoreSignals_timeUntilReset) && simpleSemaphoreSignals_semaphoresArray[i][4] == 1) {
+                    // then the time has passed so set the signal to danger
+                    digitalWrite(simpleSemaphoreSignals_semaphoresArray[i][1], HIGH);
+                    // set the state to danger
+                    simpleSemaphoreSignals_semaphoresArray[i][3] = 0;
+                    delay(simpleSemaphoreSignals_relayHoldTime);
+                    digitalWrite(simpleSemaphoreSignals_semaphoresArray[i][1], LOW);
+                }
+            }
+        }
+    }
+
+
+    // then do the pointActivatedSemaphores
+
+    // then check the state of the danger input
+    if(digitalRead(simpleSemaphoreSignals_pointActivatedSemaphoreDangerInputPin) == LOW) {
+        // then the signal should be set to danger so check if it is not
+        if(simpleSemaphoreSignals_pointActivatedSemaphoreSignalState != 0) {
+            // then change the signal
+            digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, HIGH);
+            // change the signal state
+            simpleSemaphoreSignals_pointActivatedSemaphoreSignalState = 1;
+            delay(simpleSemaphoreSignals_relayHoldTime);
+            digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, LOW);
+        }
+    }
+    // then check the state of the pass input
+    if(digitalRead(simpleSemaphoreSignals_pointActivatedSemaphorePassInputPin) == LOW) {
+        // then the signal should be set to pass so check if it is not
+        if(simpleSemaphoreSignals_pointActivatedSemaphoreSignalState != 1) {
+            // then change the signal
+            digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, HIGH);
+            // change the signal state
+            simpleSemaphoreSignals_pointActivatedSemaphoreSignalState = 0;
+            delay(simpleSemaphoreSignals_relayHoldTime);
+            digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, LOW);
+        }
+    }
+
+    // reset semaphore signals to danger
+    if(digitalRead(simpleSemaphoreSignals_resetToDangerPin) == LOW) {
+        // then go through the semaphore signals in the array and set them to danger
+        for(int i = 0; i < sizeof(simpleSemaphoreSignals_semaphoresArray)/sizeof(simpleSemaphoreSignals_semaphoresArray[0]); i++) {
+            // then set the signal to danger if it is not already
+            if(simpleSemaphoreSignals_semaphoresArray[i][3] != 0) {
+                // then change it and set the signal state
+                digitalWrite(simpleSemaphoreSignals_semaphoresArray[i][1], HIGH);
+                simpleSemaphoreSignals_semaphoresArray[i][3] = 0;
+                delay(simpleSemaphoreSignals_relayHoldTime);
+                digitalWrite(simpleSemaphoreSignals_semaphoresArray[i][1], LOW);
+            }
+        }
+
+        if(simpleSemaphoreSignals_pointActivatedSemaphoreSignalState != 0) {
+            // then change the signal
+            digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, HIGH);
+            // change the signal state
+            simpleSemaphoreSignals_pointActivatedSemaphoreSignalState = 0;
+            delay(simpleSemaphoreSignals_relayHoldTime);
+            digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, LOW);
+        }
+        
+    }
+
+    // ###################### End Of Simple Semaphore Signals ###############################
+
+    // then do the pushbuttons on the main panel
+
+    // Red Track Reset / Allow Wrong Way Running
+    // check if the red track reset button has been pressed
+    if(digitalRead(RTResetButtonPin) == LOW) {
+        // then check if the button has not been set to pressed
+        if(RTResetButtonPressed == false) {
+            // then set the button to pressed
+            RTResetButtonPressed = true;
+            RTResetButtonPressedTime = millis();
+        }
+        else {
+            // then check how long the button has been pressed for
+            if(millis() - RTResetButtonPressedTime > 1000) {
+                // then check if the RT Allow Wrong Way Running Is True
+                if(RTAllowWrongWayRunning == true) {
+                    // then stop allowing wrong way running
+                    digitalWrite(RTWrongWayRunningLedPin, LOW);
+                    ignoredLines[1] = 0;
+                    RTAllowWrongWayRunning = false;
+                    // then set the button pressed variable to false
+                    RTResetButtonPressed = false;
+                }
+                else {
+                    // then as it is bigger than 1 second then set the RTAllowWrongWayRunning to true
+                    RTAllowWrongWayRunning = true;
+                    // then put the led on
+                    digitalWrite(RTWrongWayRunningLedPin, HIGH);
+                    // then put the red track into the ignoredLines list
+                    ignoredLines[1] = 1;
+                    // then set the button pressed variable to false
+                    RTResetButtonPressed = false;
+                }
+            }
+        }
+
+    }
+    else {
+        // then the button isnt pressed now so check if it was pressed before
+        if(RTResetButtonPressed == true) {
+            // then check when it was stopped being pressed
+            if(millis() - RTResetButtonPressedTime < 1000) {
+                // then it should reset the Red Track
+                for(int i = 0; i < sizeof(Blocks)/sizeof(Blocks[0]); i++) {
+                    // check if it is the red track
+                    if(Blocks[i][6] == 1) {
+                        Blocks[i][3] = 0;
+                        Blocks[i][4] = 0;
+                    }
+                }
+
+                // then set the RTResetButton to false
+                RTResetButtonPressed = false;
+            }
+        }
+    }
+
+    // Blue Track Reset / Allow Wrong Way Running
+    // check if the blue track reset button has been pressed
+    if(digitalRead(BTResetButtonPin) == LOW) {
+        // then check if the button has not been set to pressed
+        if(BTResetButtonPressed == false) {
+            // then set the button to pressed
+            BTResetButtonPressed = true;
+            BTResetButtonPressedTime = millis();
+        }
+        else {
+            // then check how long the button has been pressed for
+            if(millis() - BTResetButtonPressedTime > 1000) {
+                // then check if the BT Allow Wrong Way Running Is True
+                if(BTAllowWrongWayRunning == true) {
+                    // then stop allowing wrong way running
+                    digitalWrite(BTWrongWayRunningLedPin, LOW);
+                    ignoredLines[2] = 0;
+                    BTAllowWrongWayRunning = false;
+                    // then set the button pressed variable to false
+                    BTResetButtonPressed = false;
+                }
+                else {
+                    // then as it is bigger than 1 second then set the BTAllowWrongWayRunning to true
+                    BTAllowWrongWayRunning = true;
+                    // then put the led on
+                    digitalWrite(BTWrongWayRunningLedPin, HIGH);
+                    // then put the red track into the ignoredLines list
+                    ignoredLines[2] = 2;
+                    // then set the button pressed variable to false
+                    BTResetButtonPressed = false;
+                }
+            }
+        }
+
+    }
+    else {
+        // then the button isnt pressed now so check if it was pressed before
+        if(BTResetButtonPressed == true) {
+            // then check when it was stopped being pressed
+            if(millis() - BTResetButtonPressedTime < 1000) {
+                // then it should reset the Red Track
+                for(int i = 0; i < sizeof(Blocks)/sizeof(Blocks[0]); i++) {
+                    // check if it is the blue track
+                    if(Blocks[i][6] == 2) {
+                        Blocks[i][3] = 0;
+                        Blocks[i][4] = 0;
+                    }
+                }
+
+                // then set the BTResetButton to false
+                BTResetButtonPressed = false;
+            }
+        }
+    }
+
+    // then do the RTTrainInCarriageSiding
+
+    if(digitalRead(RTTrainInCarriageSidingButtonPin) == LOW) {
+        // then set the 2 blocks that would be occupied to clear
+        Blocks[][3] == 0;
+        Blocks[][4] == 0;
+        Blocks[][3] == 0;
+        Blocks[][4] == 0;
+    }
+
+    // then do the RTTrainInBayPlatform
+    if(digitalRead(RTTrainInBayPlatformButtonPin) == LOW) {
+        // then set the 2 blocks that would be occupied to clear
+        Blocks[][3] == 0;
+        Blocks[][4] == 0;
+        Blocks[][3] == 0;
+        Blocks[][4] == 0;
+    }
+
 
     delay(10);
 

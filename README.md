@@ -136,6 +136,7 @@ In the check care must be taken to ensure that the last time the sensor was trig
 2. Check And Change Signal (2 Check Instructions)
 3. Check And Change Signal (3 Check Instructions)
 4. Change Signals To Pass
+5. Semaphore Signal Delay
 
 ### **No Instruction [0]** - this **INT** type will state that the instruction will do nothing
 
@@ -166,4 +167,10 @@ SetPinMode()
 Serial1 Instructions
 0 = SetPinMode
 1 = SetPin
+
+## Simple Semaphore Signals Program
+
+> This Part Of The Program Is Separate From The Block Signals and is just used for effect
+
+All Variable names will start with simpleSemaphoreSignals_
 
