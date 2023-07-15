@@ -13,12 +13,12 @@ unsigned long SensorDebounceTime = 4000;
 const int RelayHoldTime = 100;
 
 // then define the RedTrackResetButtonPin, BlueTrackResetButtonPin, RedTrackWrongWayRunningLedPin, BlueTrackWrongWayRunningLedPin, RedTrackTrainInCarriageSidingButtonPin, RedTrackTrainInBayPlatformButtonPin
-const int RTResetButtonPin = 0;
-const int RTWrongWayRunningLedPin = 0;
-const int BTResetButtonPin = 0;
-const int BTWrongWayRunningLedPin = 0;
-const int RTTrainInCarriageSidingButtonPin = 0;
-const int RTTrainInBayPlatformButtonPin = 0;
+const int RTResetButtonPin = 2;
+const int RTWrongWayRunningLedPin = 3;
+const int BTResetButtonPin = 4;
+const int BTWrongWayRunningLedPin = 5;
+const int RTTrainInCarriageSidingButtonPin = 6;
+const int RTTrainInBayPlatformButtonPin = 7;
 
 bool RTResetButtonPressed = false;
 bool BTResetButtonPressed = false;
@@ -35,36 +35,24 @@ const int LinesList[4] = {1,2,3,4};
 int ignoredLines[5] = {0,0,0,0,0};
 
 // Blocks Array
-int Blocks[3][7] = {
+int Blocks[0][0] = {
   // 0  1  2  3  4  5  6
-    {0, 2, 0, 0, 0, 2, 1},
-    {1, 3, 0, 0, 0, 0, 1},
-    {2, 4, 0, 0, 0, 1, 1}
+
 };
 
 // SensorLastTriggeredTime
-unsigned long SensorLastTriggeredTime[3] = {0, 0, 0};
+unsigned long SensorLastTriggeredTime[0] = {};
 
 // Signals Array
-int Signals[3][11] = {
+int Signals[0][0] = {
   // 0  1  2  3  4   5   6  7   8  9  10
-    {0, 0, 5, 0, 0, 14, 15, 0, 16, 0, 2},
-    {1, 1, 5, 0, 0, 17, 20, 0, 21, 3, 5},
-    {2, 2, 5, 0, 0, 22, 23, 0, 24, 6, 8}
+
 };
 
 // Signal Instructions Array
-const int SignalInstructions[9][11] = {
+const int SignalInstructions[0][0] = {
   // 0  1  2  3  4  5  6  7  8  9  10
-    {0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0}, //signal 0 danger if block infront occupied
-    {1, 0, 1, 2, 1, 0, 2, 1, 0, 0, 1}, //signal 0 warning if block infront clear and block infront of that occupied
-    {2, 0, 3, 2, 1, 0, 2, 0, 0, 0, 1}, //signal 0 pass if block infront clear and block infront of that clear
-    {3, 1, 0, 1, 2, 1, 0, 0, 0, 0, 0}, //signal 1 danger if block infront occupied
-    {4, 1, 1, 2, 2, 0, 0, 1, 0, 0, 1}, //signal 1 warning if block infront clear and block infront of that occupied
-    {5, 1, 3, 2, 2, 0, 0, 0, 0, 0, 1}, //signal 1 pass if block infront clear and block infront of that clear
-    {6, 2, 0, 1, 0, 1, 0, 0, 0, 0, 0}, //signal 2 danger if block infront occupied
-    {7, 2, 1, 2, 0, 0, 1, 1, 0, 0, 1}, //signal 2 warning if block infront clear and block infront of that occupied
-    {8, 2, 3, 2, 0, 0, 1, 0, 0, 0, 1}  //signal 2 pass if block infront clear and block infront of that clear
+
 };
 
 // ################### Simple Semaphore Signals #############################
@@ -76,17 +64,15 @@ ArduinoTimer simpleSemaphoreSignals_timersArray[4];
 int simpleSemaphoreSignals_semaphoresArray[4][5] = {
 // 0: id, 1: semaphoreChangePin, 2: semaphoreSensorPin, 3: semaphoreState, 4: timerStarted
   // 0  1  2  3  4
-    {0, 0, 0, 0, 0},
-    {1, 0, 0, 0, 0},
-    {2, 0, 0, 0, 0},
-    {3, 0, 0, 0, 0}
+    {1, 24, 67, 0, 0},
+    {2, 35, 66, 0, 0},
+    {3, 30, 69, 0, 0},
+    {4, 29, 68, 0, 0}
 };
 
-int simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin = 0;
-int simpleSemaphoreSignals_pointActivatedSemaphoreDangerInputPin = 0;
-int simpleSemaphoreSignals_pointActivatedSemaphorePassInputPin = 0;
+int simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin = 28;
+int simpleSemaphoreSignals_pointActivatedSemaphorePassInputPin = 17;
 int simpleSemaphoreSignals_pointActivatedSemaphoreSignalState = 0;
-
 
 // ##################### END Simple Semaphore Signals ########################
 
@@ -310,9 +296,6 @@ void setup() {
 
     // then set the pointActivatedSemaphore relay to output
     pinMode(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, OUTPUT);
-
-    // then set the pointActivatedSemaphore danger input to INPUT_PULLUP
-    pinMode(simpleSemaphoreSignals_pointActivatedSemaphoreDangerInputPin, INPUT_PULLUP);
 
     // then set the pointActivatedSemaphore pass input to INPUT_PULLUP
     pinMode(simpleSemaphoreSignals_pointActivatedSemaphorePassInputPin, INPUT_PULLUP);
@@ -542,10 +525,14 @@ void loop() {
 
     // then go through each signal
     for(int i = 0; i < sizeof(simpleSemaphoreSignals_semaphoresArray)/sizeof(simpleSemaphoreSignals_semaphoresArray[0]); i++) {
+        //Serial.print("Doing Semaphore: ");
+        //Serial.println(i);
         // then check if the sensor before the signal has been activated
         if(digitalRead(simpleSemaphoreSignals_semaphoresArray[i][2]) == LOW) {
+            //Serial.println("Sensor Activated");
             // then check if the signal is set to danger
             if(simpleSemaphoreSignals_semaphoresArray[i][3] == 0) {
+              //Serial.println("Semaphore Set To Danger");
                 // then it is set to danger so change it to pass
                 digitalWrite(simpleSemaphoreSignals_semaphoresArray[i][1], HIGH);
                 // set the state to pass
@@ -553,12 +540,20 @@ void loop() {
                 delay(simpleSemaphoreSignals_relayHoldTime);
                 digitalWrite(simpleSemaphoreSignals_semaphoresArray[i][1], LOW);
             }
+            else {
+                // if the signal is then set to pass then restart the timer
+                //Serial.println("Semaphore Set To Pass, Restarting Timer");
+                simpleSemaphoreSignals_timersArray[i].Reset();
+            }
         }
         else {
             // then make sure that the signal is at pass
+            //Serial.println("Sensor Not Activated");
             if(simpleSemaphoreSignals_semaphoresArray[i][3] == 1) {
+              //Serial.println("Semaphore At PASS");
                 // then check if the timer has been started and if it hasnt then start it
                 if(simpleSemaphoreSignals_semaphoresArray[i][4] == 0) {
+                    //Serial.println("Timer Not Started, Starting Timer");
                     // then start the timer
                     simpleSemaphoreSignals_timersArray[i].Reset();
                     // then set the timer as started
@@ -566,11 +561,15 @@ void loop() {
                 }
                 // then check if the required time has passed and check if the timer has started
                 if(simpleSemaphoreSignals_timersArray[i].TimePassed_Milliseconds(simpleSemaphoreSignals_timeUntilReset) && simpleSemaphoreSignals_semaphoresArray[i][4] == 1) {
+                    //Serial.println("Timer Finnished And Timer Was Started");
                     // then the time has passed so set the signal to danger
                     digitalWrite(simpleSemaphoreSignals_semaphoresArray[i][1], HIGH);
                     // set the state to danger
                     simpleSemaphoreSignals_semaphoresArray[i][3] = 0;
                     delay(simpleSemaphoreSignals_relayHoldTime);
+                    // then set the timer as stopped
+                    simpleSemaphoreSignals_semaphoresArray[i][4] = 0;
+                    //Serial.println("Set State To Danger And Timer Started To False");
                     digitalWrite(simpleSemaphoreSignals_semaphoresArray[i][1], LOW);
                 }
             }
@@ -579,30 +578,43 @@ void loop() {
 
 
     // then do the pointActivatedSemaphores
-
-    // then check the state of the danger input
-    if(digitalRead(simpleSemaphoreSignals_pointActivatedSemaphoreDangerInputPin) == LOW) {
-        // then the signal should be set to danger so check if it is not
-        if(simpleSemaphoreSignals_pointActivatedSemaphoreSignalState != 0) {
-            // then change the signal
-            digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, HIGH);
-            // change the signal state
-            simpleSemaphoreSignals_pointActivatedSemaphoreSignalState = 1;
-            delay(simpleSemaphoreSignals_relayHoldTime);
-            digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, LOW);
-        }
-    }
     // then check the state of the pass input
     if(digitalRead(simpleSemaphoreSignals_pointActivatedSemaphorePassInputPin) == LOW) {
-        // then the signal should be set to pass so check if it is not
-        if(simpleSemaphoreSignals_pointActivatedSemaphoreSignalState != 1) {
-            // then change the signal
-            digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, HIGH);
-            // change the signal state
-            simpleSemaphoreSignals_pointActivatedSemaphoreSignalState = 0;
-            delay(simpleSemaphoreSignals_relayHoldTime);
-            digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, LOW);
+        // then make sure that it is actually set correctly
+        // check if the timer has been started
+        // then delay 10ms to make sure it is correct
+        delay(10);
+        if(digitalRead(simpleSemaphoreSignals_pointActivatedSemaphorePassInputPin) == LOW) {
+            Serial.println("Point Set To Pass");
+            // then the signal should be set to pass so check if it is not and that 3 seconds has passed since it was last moved
+            if(simpleSemaphoreSignals_pointActivatedSemaphoreSignalState != 1) {
+                // then change the signal
+                Serial.println("Signal Changing To Pass");
+                digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, HIGH);
+                // change the signal state
+                simpleSemaphoreSignals_pointActivatedSemaphoreSignalState = 1;
+                delay(simpleSemaphoreSignals_relayHoldTime);
+                digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, LOW);
+            }
         }
+    }
+    else {
+        // then if the signal is not activated it can be assumed that the signal should be at danger
+        // then wait a period of time to check that the signal is still correct
+        delay(10);
+        if(digitalRead(simpleSemaphoreSignals_pointActivatedSemaphorePassInputPin) == HIGH) {
+            // then the signal needs changing to danger
+            if(simpleSemaphoreSignals_pointActivatedSemaphoreSignalState != 0) {
+                // then change the signal
+                Serial.println("Signal Changing To Danger");
+                digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, HIGH);
+                // change the signal state
+                simpleSemaphoreSignals_pointActivatedSemaphoreSignalState = 0;
+                delay(simpleSemaphoreSignals_relayHoldTime);
+                digitalWrite(simpleSemaphoreSignals_pointActivatedSemaphoreRelayPin, LOW);
+            }
+        }
+    
     }
 
     // reset semaphore signals to danger
@@ -748,19 +760,19 @@ void loop() {
 
     if(digitalRead(RTTrainInCarriageSidingButtonPin) == LOW) {
         // then set the 2 blocks that would be occupied to clear
-        Blocks[][3] == 0;
-        Blocks[][4] == 0;
-        Blocks[][3] == 0;
-        Blocks[][4] == 0;
+        //Blocks[][3] == 0;
+        //Blocks[][4] == 0;
+        //Blocks[][3] == 0;
+        //Blocks[][4] == 0;
     }
 
     // then do the RTTrainInBayPlatform
     if(digitalRead(RTTrainInBayPlatformButtonPin) == LOW) {
         // then set the 2 blocks that would be occupied to clear
-        Blocks[][3] == 0;
-        Blocks[][4] == 0;
-        Blocks[][3] == 0;
-        Blocks[][4] == 0;
+        //Blocks[][3] == 0;
+        //Blocks[][4] == 0;
+        //Blocks[][3] == 0;
+        //Blocks[][4] == 0;
     }
 
 
