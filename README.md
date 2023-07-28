@@ -146,7 +146,7 @@ In the check care must be taken to ensure that the last time the sensor was trig
 
 ### **Check And Change Signal (3 Check Instructions) [3]** - this **INT** type is exactly the same as the above but with another instruction totalling 3. The boolean operator applies to the result of all these instructions
 
-### **Change Signals To Pass [4]** this takes the Block Id from the 5 available instructions and then sets them to clear, the first instruction data 1 is used to say how many of the 5 blocks behind are to be cleared
+### **Change Signals To Pass [4]** If the Block ID in i1d1 matches the condition in i1d2 then Blocks will be reset to clear, The value in i2d1 will say if 1, 2 or 3 blocks are being reset and then the number in i2d2 will be the first block to be reset and i3d1 and i3d2 will be also reset - NEEDS CHANGING TO BE ON A BLOCK INSTEAD OF BEING ON A SIGNAL
 
 ## Boolean Operators List
 

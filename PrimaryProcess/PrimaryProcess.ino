@@ -32,27 +32,126 @@ bool BTAllowWrongWayRunning = false;
 // Lines List - Track - See Documentation
 const int LinesList[4] = {1,2,3,4};
 
-int ignoredLines[5] = {0,0,0,0,0};
+int ignoredLines[4] = {0,0,0,0};
 
 // Blocks Array
-int Blocks[0][0] = {
+int Blocks[20][7] = {
+    // When Inputting The Sensor Pin, Make Sure To Use The Sensor Before's Pin
   // 0  1  2  3  4  5  6
-
+    {0, 0, 0, 0, 0, 0, 0},// placeholder
+    {1, 0, 0, 0, 0, 0, 0},// placeholder
+    {2, 0, 0, 0, 0, 0, 0},// placeholder
+    {3, 0, 0, 0, 0, 0, 0},// placeholder
+    {4, 0, 0, 0, 0, 0, 0},// placeholder
+    {5, 0, 0, 0, 0, 0, 0},// placeholder
+    {6, 61, 0, 0, 0, 11, 2}, // REDTRACKTOPLINE
+    {7, 63, 0, 0, 0, 6, 2},  // REDTRACKTOPLINE
+    {8, 62, 0, 0, 0, 7, 2},  // REDTRACKTOPLINE
+    {9, 45, 0, 0, 0, 8, 2},  // REDTRACKTOPLINE
+    {10, 44, 0, 0, 0, 9, 2}, // REDTRACKTOPLINE
+    {11, 53, 0, 0, 0, 10, 2},// REDTRACKTOPLINE
+    {12, 42, 0, 0, 0, 14, 3},// BLUETRACKDOWNSCENICLINE
+    {13, 64, 0, 0, 0, 12, 3},// BLUETRACKDOWNSCENICLINE
+    {14, 50, 0, 0, 0, 13, 3},// BLUETRACKDOWNSCENICLINE
+    {15, 65, 0, 0, 0, 17, 4},// REDTRACKUPSCENICLINE
+    {16, 43, 0, 0, 0, 15, 4},// REDTRACKUPSCENICLINE
+    {17, 52, 0, 0, 0, 16, 4},// REDTRACKUPSCENICLINE
+    {18, 0, 0, 0, 0, 0, 0},// placeholder
+    {19, 0, 0, 0, 0, 0, 0}//placeholder
 };
 
 // SensorLastTriggeredTime
-unsigned long SensorLastTriggeredTime[0] = {};
+unsigned long SensorLastTriggeredTime[20] = {};
 
 // Signals Array
-int Signals[0][0] = {
+int Signals[20][11] = {
   // 0  1  2  3  4   5   6  7   8  9  10
-
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
+    {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
+    {3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
+    {4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
+    {5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
+    {6, 6, 5, 0, 0, 165, 164, 0, 163, 18, 20}, // RTTOPLINE
+    {7, 7, 5, 0, 0, 162, 161, 0, 160, 21, 23}, // RTTOPLINE
+    {8, 8, 5, 0, 0, 137, 139, 0, 138, 24, 26}, // RTTOPLINE
+    {9, 9, 5, 0, 0, 132, 127, 0, 131, 27, 29}, // RTTOPLINE
+    {10, 10, 5, 0, 0, 128, 130, 0, 129, 30, 32}, // RTTOPLINE
+    {11, 11, 5, 0, 0, 159, 158, 0, 156, 33, 35}, // RTTOPLINE
+    {12, 12, 5, 0, 0, 168, 167, 0, 166, 36, 38}, // BTDOWNSCENICLINE
+    {13, 13, 5, 0, 0, 141, 140, 0, 142, 39, 41}, // BTDOWNSCENICLINE
+    {14, 14, 5, 0, 0, 146, 147, 0, 148, 42, 44}, // BTDOWNSCENICLINE
+    {15, 15, 5, 0, 0, 149, 150, 0, 151, 45, 47}, // RTUPSCENICLINE
+    {16, 16, 5, 0, 0, 143, 144, 0, 145, 48, 50}, // RTUPSCENICLINE
+    {17, 17, 5, 0, 0, 152, 153, 0, 169, 51, 53}, // RTUPSCENICLINE
+    {18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
+    {19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
+    
 };
 
 // Signal Instructions Array
-const int SignalInstructions[0][0] = {
+const int SignalInstructions[60][11] = {
   // 0  1  2  3  4  5  6  7  8  9  10
-
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {18, 6, 3, 2, 7, 0, 8, 0, 0, 0, 1}, // signal 6 pass when block infront1 clear and block infront2 clear
+    {19, 6, 1, 2, 7, 0, 8, 1, 0, 0, 1}, // signal 6 warning when block infront1 clear and block infront2 occupied
+    {20, 6, 0, 1, 7, 1, 0, 0, 0, 0, 0}, // signal 6 danger when block infront1 occupied
+    {21, 7, 3, 2, 8, 0, 9, 0, 0, 0, 1}, // signal 7 pass when block infront1 clear and block infront2 clear
+    {22, 7, 1, 2, 8, 0, 9, 1, 0, 0, 1}, // signal 7 warning when block infront1 clear and block infront2 occupied
+    {23, 7, 0, 1, 8, 1, 0, 0, 0, 0, 0}, // signal 7 danger when block infront1 occupied
+    {24, 8, 3, 2, 9, 0, 10, 0, 0, 0, 1}, // signal 8 pass when block infront1 clear and block infront2 clear
+    {25, 8, 1, 2, 9, 0, 10, 1, 0, 0, 1}, // signal 8 warning when block infront1 clear and block infront2 occupied
+    {26, 8, 0, 1, 9, 1, 0, 0, 0, 0, 0}, // signal 8 danger when block infront1 occupied
+    {27, 9, 3, 2, 10, 0, 11, 0, 0, 0, 1}, // signal 9 pass when block infront1 clear and block infront2 clear
+    {28, 9, 1, 2, 10, 0, 11, 1, 0, 0, 1}, // signal 9 warning when block infront1 clear and block infront2 occupied
+    {29, 9, 0, 1, 10, 1, 0, 0, 0, 0, 0}, // signal 9 danger when block infront1 occupied
+    {30, 10, 3, 2, 11, 0, 6, 0, 0, 0, 1}, // signal 10 pass when block infront1 clear and block infront2 clear
+    {31, 10, 1, 2, 11, 0, 6, 1, 0, 0, 1}, // signal 10 warning when block infront1 clear and block infront2 occupied
+    {32, 10, 0, 1, 11, 1, 0, 0, 0, 0, 0}, // signal 10 danger when block infront1 occupied
+    {33, 11, 3, 2, 6, 0, 7, 0, 0, 0, 1}, // signal 11 pass when block infront1 clear and block infront2 clear
+    {34, 11, 1, 2, 6, 0, 7, 1, 0, 0, 1}, // signal 11 warning when block infront1 clear and block infront2 occupied
+    {35, 11, 0, 1, 6, 1, 0, 0, 0, 0, 0}, // signal 11 danger when block infront1 occupied
+    {36, 12, 3, 2, 13, 0, 14, 0, 0, 0, 1}, // signal 12 pass when block infront1 clear and block infront2 clear
+    {37, 12, 1, 2, 13, 0, 14, 1, 0, 0, 1}, // signal 12 warning when block infront1 clear and block infront2 occupied
+    {38, 12, 0, 1, 13, 1, 0, 0, 0, 0, 0}, // signal 12 danger when block infront1 occupied
+    {39, 13, 3, 2, 14, 0, 12, 0, 0, 0, 1}, // signal 13 pass when block infront1 clear and block infront2 clear
+    {40, 13, 1, 2, 14, 0, 12, 1, 0, 0, 1}, // signal 13 warning when block infront1 clear and block infront2 occupied
+    {41, 13, 0, 1, 14, 1, 0, 0, 0, 0, 0}, // signal 13 danger when block infront1 occupied
+    {42, 14, 3, 2, 12, 0, 13, 0, 0, 0, 1}, // signal 14 pass when block infront1 clear and block infront2 clear
+    {43, 14, 1, 2, 12, 0, 13, 1, 0, 0, 1}, // signal 14 warning when block infront1 clear and block infront2 occupied
+    {44, 14, 0, 1, 12, 1, 0, 0, 0, 0, 0}, // signal 14 danger when block infront1 occupied
+    {45, 15, 3, 2, 16, 0, 17, 0, 0, 0, 1}, // signal 15 pass when block infront1 clear and block infront2 clear
+    {46, 15, 1, 2, 16, 0, 17, 1, 0, 0, 1}, // signal 15 warning when block infront1 clear and block infront2 occupied
+    {47, 15, 0, 1, 16, 1, 0, 0, 0, 0, 0}, // signal 15 danger when block infront1 occupied
+    {48, 16, 3, 2, 17, 0, 15, 0, 0, 0, 1}, // signal 16 pass when block infront1 clear and block infront2 clear
+    {49, 16, 1, 2, 17, 0, 15, 1, 0, 0, 1}, // signal 16 warning when block infront1 clear and block infront2 occupied
+    {50, 16, 0, 1, 17, 1, 0, 0, 0, 0, 0}, // signal 16 danger when block infront1 occupied
+    {51, 17, 3, 2, 15, 0, 16, 0, 0, 0, 1}, // signal 17 pass when block infront1 clear and block infront2 clear
+    {52, 17, 1, 2, 15, 0, 16, 1, 0, 0, 1}, // signal 17 warning when block infront1 clear and block infront2 occupied
+    {53, 17, 0, 1, 15, 1, 0, 0, 0, 0, 0}, // signal 17 danger when block infront1 occupied
+    {54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
 };
 
 // ################### Simple Semaphore Signals #############################
@@ -105,6 +204,7 @@ void setPinMode(int pin, int mode) {
         else if(mode == 2) {
             pinMode(pin, OUTPUT);
         }
+        Serial.println("Set Pin Mode");
     }
 
 }
@@ -245,18 +345,27 @@ void setup() {
             // then set the SignalDangerPin [5] and SignalPassPin [8] to output
             setPinMode(Signals[i][5], 2);
             setPinMode(Signals[i][8], 2);
+            // then turn all the pins off
+            setPin(Signals[i][5], 0);
+            setPin(Signals[i][8], 0);
         }
         // signal type 2 Aspect Colour Light Signal Danger & Warning [3]
         else if(Signals[i][2] == 3) {
             // then set the SignalDangerPin [5] and SignalWarningPin [6]
             setPinMode(Signals[i][5], 2);
-            setPinMode(Signals[i][6], 2); 
+            setPinMode(Signals[i][6], 2);
+            // then turn all the pins of
+            setPin(Signals[i][5], 0);
+            setPin(Signals[i][6], 0);
         }
         // signal type 2 Aspect Colour Light Signal Warning & Pass [4]
         else if(Signals[i][2] == 4) {
             // then set the SignalWarningPin [6] and SignalPassPin [8]
             setPinMode(Signals[i][6], 2);
             setPinMode(Signals[i][8], 2);
+            // then turn all the pins off
+            setPin(Signals[i][6], 0);
+            setPin(Signals[i][8], 0);
         } 
         // signal type 3 Aspect Colour Light Signal [5]
         else if(Signals[i][2] == 5) {
@@ -264,6 +373,10 @@ void setup() {
             setPinMode(Signals[i][5], 2);
             setPinMode(Signals[i][6], 2);
             setPinMode(Signals[i][8], 2);
+            // then turn all the pins off
+            setPin(Signals[i][5], 0);
+            setPin(Signals[i][6], 0);
+            setPin(Signals[i][8], 0);
         }
         // signal type 4 Aspect Colour Light Signal [5]
         else if(Signals[i][2] == 6) {
@@ -273,6 +386,11 @@ void setup() {
             setPinMode(Signals[i][6], 2);
             setPinMode(Signals[i][7], 2);
             setPinMode(Signals[i][8], 2);
+            // then turn all the pins off
+            setPin(Signals[i][5], 0);
+            setPin(Signals[i][6], 0);
+            setPin(Signals[i][7], 0);
+            setPin(Signals[i][8], 0);
         }
 
         // then initialise the signal as danger
@@ -321,7 +439,10 @@ void loop() {
             // then check if the line that the block is on is being ignored
             if(Blocks[i][6] == ignoredLines[j]) {
                 // set ignoreBlock to true and break from the loop
-                ignoreBlock = true;
+                // SET TO FALSE TEMPORARY
+                //ignoreBlock = true;
+                ignoreBlock = false;
+                //Serial.println("Ignoring Line");
                 break;
             }
         }
@@ -474,48 +595,8 @@ void loop() {
                 }
             }
             else if(instructionType == 4) {
-                // Change Signals To Pass
-                // 1 - then check how many blocks behind are to be set clear behind
-                if(i1d1 == 1) {
-                    // then set the block at i1d2 to clear
-                    Blocks[i1d2][4] = 0;
-                }
-                else if(i1d1 == 2) {
-                    // then set the block at i1d2 to clear
-                    Blocks[i1d2][4] = 0;
-                    // then set the block at i2d1 to clear
-                    Blocks[i2d1][4] = 0;
-                }
-                else if(i1d1 == 3) {
-                    // then set the block at i1d2 to clear
-                    Blocks[i1d2][4] = 0;
-                    // then set the block at i2d1 to clear
-                    Blocks[i2d1][4] = 0;
-                    // then set the block at i2d2 to clear
-                    Blocks[i2d2][4] = 0;
-                }
-                else if(i1d1 == 4) {
-                    // then set the block at i1d2 to clear
-                    Blocks[i1d2][4] = 0;
-                    // then set the block at i2d1 to clear
-                    Blocks[i2d1][4] = 0;
-                    // then set the block at i2d2 to clear
-                    Blocks[i2d2][4] = 0;
-                    // then set the block at i3d1 to clear
-                    Blocks[i3d1][4] = 0;
-                }
-                else if(i1d1 == 5) {
-                    // then set the block at i1d2 to clear
-                    Blocks[i1d2][4] = 0;
-                    // then set the block at i2d1 to clear
-                    Blocks[i2d1][4] = 0;
-                    // then set the block at i2d2 to clear
-                    Blocks[i2d2][4] = 0;
-                    // then set the block at i3d1 to clear
-                    Blocks[i3d1][4] = 0;
-                    // then set the block at i3d2 to clear
-                    Blocks[i3d2][4] = 0;
-                }
+                // Change Blocks To Clear
+                // NEEDS CHANGING TO BE ON A BLOCK INSTEAD OF ON A SIGNAL
             }
         }
     }
@@ -776,6 +857,6 @@ void loop() {
     }
 
 
-    delay(10);
+    //delay(10);
 
 };
