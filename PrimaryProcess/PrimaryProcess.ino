@@ -38,9 +38,9 @@ int ignoredLines[4] = {0,0,0,0};
 int Blocks[20][7] = {
     // When Inputting The Sensor Pin, Make Sure To Use The Sensor Before's Pin
   // 0  1  2  3  4  5  6
-    {0, 0, 0, 0, 0, 0, 0},// placeholder
+    {0, 0, 0, 0, 0, 0, 0},// placeholder - DO NOT REMOVE AT ALL
     {1, 0, 0, 0, 0, 0, 0},// placeholder
-    {2, 0, 0, 0, 0, 0, 0},// placeholder
+    {2, 54, 0, 0, 0, 1, 1},  //BLUETRACKTOPLINE
     {3, 0, 0, 0, 0, 0, 0},// placeholder
     {4, 0, 0, 0, 0, 0, 0},// placeholder
     {5, 0, 0, 0, 0, 0, 0},// placeholder
@@ -66,9 +66,9 @@ unsigned long SensorLastTriggeredTime[20] = {};
 // Signals Array
 int Signals[20][11] = {
   // 0  1  2  3  4   5   6  7   8  9  10
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder - DO NOT REMOVE
     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
-    {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
+    {2, 2, 5, 0, 0, 117, 116, 0, 115, 6, 8},       // BLUETRACKTOPLINE - ADDED 100 To designate Secondary Process Board - Needs Testing
     {3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
     {4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
     {5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},// placeholder
@@ -92,15 +92,15 @@ int Signals[20][11] = {
 // Signal Instructions Array
 const int SignalInstructions[60][11] = {
   // 0  1  2  3  4  5  6  7  8  9  10
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
-    {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder - DO NOT REMOVE
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder - DO NOT REMOVE
+    {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder - DO NOT REMOVE
     {3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
     {4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
     {5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
-    {6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
-    {7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
-    {8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
+    {6, 2, 3, 2, 3, 0, 18, 0, 0, 0, 1}, // signal 2 pass when block infront1 clear and block infront2 clear
+    {7, 2, 1, 2, 3, 0, 18, 1, 0, 0, 1}, // signal 2 warning when block infront1 clear and block infront2 occupied
+    {8, 2, 0, 1, 3, 1, 0, 0, 0, 0, 0}, // signal 2 danger when block infront1 occupied
     {9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
     {10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
     {11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // placeholder
